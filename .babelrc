@@ -1,0 +1,4 @@
+// Cấu hình trình dịch code
+{
+    "presets": ["@babel/preset-env"]
+}
