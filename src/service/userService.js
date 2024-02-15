@@ -1,4 +1,5 @@
 import mysql from "mysql2/promise";
+import db from "../models";
 
 // get the promise implementation, we will use bluebird
 import bluebird from "bluebird";
@@ -14,19 +15,13 @@ const hashUserPassword = (userPassword) => {
 
 const createNewUser = async (email, password, username) => {
     let hashPass = hashUserPassword(password);
-    const connection = await mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "12346789",
-        database: "jwtdb",
-        Promise: bluebird,
-    });
 
     try {
-        const [rows, fields] = await connection.execute(
-            "INSERT INTO users(email, password, username) VALUES (?, ?, ?)",
-            [email, hashPass, username]
-        );
+        await db.User.create({
+            username: username,
+            email: email,
+            password: hashPass,
+        });
     } catch (error) {
         console.log(">> check error: ", error);
     }
