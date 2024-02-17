@@ -91,7 +91,7 @@ const getUserById = async (userId) => {
     if (user === null) {
         console.log("Not found!");
     } else {
-        return user;
+        return user.get({ plain: true });
     }
 };
 
