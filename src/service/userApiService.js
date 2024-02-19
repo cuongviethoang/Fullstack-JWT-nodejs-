@@ -90,13 +90,34 @@ const updateUser = async (data) => {
 
 const deleteUser = async (id) => {
     try {
-        await db.User.delete({
+        let user = await db.User.findOne({
             where: {
                 id: id,
             },
         });
+
+        if (user) {
+            await user.destroy();
+
+            return {
+                EM: "delete user success",
+                EC: 0,
+                DT: [],
+            };
+        } else {
+            return {
+                EM: "user not exit",
+                EC: 2,
+                DT: [],
+            };
+        }
     } catch (e) {
         console.log(e);
+        return {
+            EM: "error from service",
+            EC: -1,
+            DT: [],
+        };
     }
 };
 

@@ -12,7 +12,7 @@ const readFunc = async (req, res) => {
                 +limit
             );
 
-            console.log(">>> check data: ", data);
+            // console.log(">>> check data: ", data);
 
             return res.status(200).json({
                 EM: data.EM,
@@ -74,6 +74,8 @@ const updateFunc = async (req, res) => {
 
 const deleteFunc = async (req, res) => {
     try {
+        // console.log(">> check req: ", req.body);
+        let data = await userApiService.deleteUser(req.body.id);
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
