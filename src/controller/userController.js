@@ -59,6 +59,8 @@ const createFunc = async (req, res) => {
 
 const updateFunc = async (req, res) => {
     try {
+        let data = await userApiService.updateUser(req.body);
+
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
@@ -67,8 +69,8 @@ const updateFunc = async (req, res) => {
     } catch (e) {
         console.log(e);
         return res.status(500).json({
-            EM: "error from server",
-            EC: "-1",
+            EM: "error from server", //error message
+            EC: "-1", // error code
             DT: "", // data
         });
     }

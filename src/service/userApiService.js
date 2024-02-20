@@ -1,37 +1,9 @@
 import db from "../models";
-import bcrypt from "bcryptjs";
-const salt = bcrypt.genSaltSync(10);
-
-// mã hóa mật khẩu
-const hashUserPassword = (userPassword) => {
-    return bcrypt.hashSync(userPassword, salt);
-};
-
-// kiểm tra tồn tại email
-const checkEmailExit = async (email) => {
-    let user = await db.User.findOne({
-        where: {
-            email: email,
-        },
-    });
-    if (user) {
-        return false;
-    }
-    return true;
-};
-
-// kiểm tra tồn tại phone
-const checkPhoneExit = async (phone) => {
-    let user = await db.User.findOne({
-        where: {
-            phone: phone,
-        },
-    });
-    if (user) {
-        return false;
-    }
-    return true;
-};
+import {
+    hashUserPassword,
+    checkEmailExit,
+    checkPhoneExit,
+} from "../service/loginRegisterService";
 
 const getAllUser = async () => {
     try {
@@ -70,8 +42,12 @@ const getUserWithPagination = async (page, limit) => {
         const { count, rows } = await db.User.findAndCountAll({
             offset,
             limit,
-            attributes: ["id", "username", "email", "phone", "sex"],
-            include: { model: db.Group, attributes: ["name", "description"] },
+            attributes: ["id", "username", "email", "phone", "sex", "address"],
+            include: {
+                model: db.Group,
+                attributes: ["id", "name", "description"],
+            },
+            order: [["id", "DESC"]],
         });
 
         let totalPages = Math.ceil(count / limit);
@@ -103,7 +79,7 @@ const createNewUser = async (data) => {
             return {
                 EM: "The email is already exit",
                 EC: 1,
-                DT: [],
+                DT: "email",
             };
         }
         let isPhoneExit = await checkPhoneExit(data.phone);
@@ -111,7 +87,7 @@ const createNewUser = async (data) => {
             return {
                 EM: "The phone is already exit",
                 EC: 1,
-                Dt: [],
+                DT: "phone",
             };
         }
 
@@ -178,7 +154,7 @@ const deleteUser = async (id) => {
     } catch (e) {
         console.log(e);
         return {
-            EM: "error from service",
+            EM: "error delete user from service",
             EC: -1,
             DT: [],
         };
