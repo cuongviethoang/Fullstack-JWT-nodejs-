@@ -1,4 +1,37 @@
 import db from "../models";
+import bcrypt from "bcryptjs";
+const salt = bcrypt.genSaltSync(10);
+
+// mã hóa mật khẩu
+const hashUserPassword = (userPassword) => {
+    return bcrypt.hashSync(userPassword, salt);
+};
+
+// kiểm tra tồn tại email
+const checkEmailExit = async (email) => {
+    let user = await db.User.findOne({
+        where: {
+            email: email,
+        },
+    });
+    if (user) {
+        return false;
+    }
+    return true;
+};
+
+// kiểm tra tồn tại phone
+const checkPhoneExit = async (phone) => {
+    let user = await db.User.findOne({
+        where: {
+            phone: phone,
+        },
+    });
+    if (user) {
+        return false;
+    }
+    return true;
+};
 
 const getAllUser = async () => {
     try {
@@ -24,7 +57,7 @@ const getAllUser = async () => {
     } catch (e) {
         console.log(e);
         return {
-            EM: "something wrong with service",
+            EM: "something wrong with get all user service",
             EC: 1,
             DT: data,
         };
@@ -56,7 +89,7 @@ const getUserWithPagination = async (page, limit) => {
     } catch (e) {
         console.log(e);
         return {
-            EM: "something wrong with service",
+            EM: "something wrong get user with pagination with service",
             EC: 1,
             DT: data,
         };
@@ -65,9 +98,40 @@ const getUserWithPagination = async (page, limit) => {
 
 const createNewUser = async (data) => {
     try {
-        await db.User.create({});
+        let isEmailExit = await checkEmailExit(data.email);
+        if (isEmailExit === false) {
+            return {
+                EM: "The email is already exit",
+                EC: 1,
+                DT: [],
+            };
+        }
+        let isPhoneExit = await checkPhoneExit(data.phone);
+        if (isPhoneExit === false) {
+            return {
+                EM: "The phone is already exit",
+                EC: 1,
+                Dt: [],
+            };
+        }
+
+        // hash  user password
+        let hashPassword = hashUserPassword(data.password);
+
+        let dataReq = { ...data, password: hashPassword };
+        await db.User.create(dataReq);
+        return {
+            EM: "create new user success",
+            EC: 0,
+            DT: [],
+        };
     } catch (e) {
         console.log(e);
+        return {
+            EM: "something wrong with create new user service",
+            EC: 1,
+            DT: [],
+        };
     }
 };
 
