@@ -1,11 +1,11 @@
+require("dotenv").config(); // sử dụng câu lệnh này ta mới lấy được các biến trong file .env thông qua process.env
 import express from "express";
 import configViewEngine from "./config/viewEngine";
 import initWebRoutes from "./routes/web";
 import initApiRoutes from "./routes/api";
 import configCors from "./config/cors";
-require("dotenv").config(); // sử dụng câu lệnh này ta mới lấy được các biến trong file .env thông qua process.env
 import bodyParser from "body-parser";
-import { createJWT, verifyToken } from "./middleware/JWTAction";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -17,6 +17,9 @@ configViewEngine(app);
 //config body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//config cookie-parser
+app.use(cookieParser());
 
 // cau hinh cors
 configCors(app);
