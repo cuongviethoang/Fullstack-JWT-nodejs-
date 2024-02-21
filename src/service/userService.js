@@ -39,17 +39,6 @@ const getUserList = async () => {
         nest: true, // gop cac thuoc tinh cua 1 model vao 1 object
     });
 
-    // let roles = await db.Group.findOne({
-    //     where: {
-    //         id: 1,
-    //     },
-    //     include: {
-    //         model: db.Role,
-    //     },
-    //     raw: true,
-    //     nest: true,
-    // });
-
     let roles = await db.Role.findAll({
         attributes: ["id", "url", "description"],
         include: {

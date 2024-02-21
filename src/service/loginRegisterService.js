@@ -2,6 +2,9 @@ import db from "../models";
 import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
 import { Op } from "sequelize";
+import { getGroupWithRoles } from "../service/JWTService";
+import { createJWT } from "../middleware/JWTAction";
+require("dotenv").config();
 
 // mã hóa mật khẩu
 const hashUserPassword = (userPassword) => {
@@ -62,6 +65,7 @@ const registerNewUser = async (rawUserData) => {
             username: rawUserData.username,
             password: hashPassword,
             phone: rawUserData.phone,
+            groupId: 4,
         });
 
         return {
@@ -94,25 +98,33 @@ const handleUserLogin = async (rawData) => {
         });
 
         if (user) {
-            console.log(">>> found user with email/phone");
             let isCorrectPassword = checkPassword(
                 rawData.password,
                 user.password
-            );
+            ); // kiểm  tra mật khẩu nhập vào form và mật khẩu trong csdl
             if (isCorrectPassword === true) {
+                // let token =
+
+                // test roles
+                let groupWithRole = await getGroupWithRoles(user);
+                let payload = {
+                    email: user.email,
+                    groupWithRole,
+                    expiresIn: process.env.JWT_EXPIRES_IN,
+                };
+
+                let token = createJWT(payload);
                 return {
                     EM: "ok!",
                     EC: 0,
-                    DT: "",
+                    DT: {
+                        access_token: token,
+                        groupWithRole,
+                    },
                 };
             }
         }
-        console.log(
-            ">>> Not found user with email/phone: ",
-            rawData.valueLogin,
-            "password: ",
-            rawData.password
-        );
+
         return {
             EM: "Your emai/phone number or password is correct",
             EC: 1,
@@ -121,7 +133,7 @@ const handleUserLogin = async (rawData) => {
     } catch (error) {
         console.log(error);
         return {
-            EM: "Something wrongs in service",
+            EM: "Something wrongs login in service",
             EC: -2,
         };
     }
