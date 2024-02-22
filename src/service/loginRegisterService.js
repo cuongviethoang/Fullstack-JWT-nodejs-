@@ -135,6 +135,7 @@ const handleUserLogin = async (rawData) => {
         return {
             EM: "Something wrongs login in service",
             EC: -2,
+            DT: "",
         };
     }
 };
