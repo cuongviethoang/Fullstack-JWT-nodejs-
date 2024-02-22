@@ -1,6 +1,10 @@
 require("dotenv").config();
 import jwt from "jsonwebtoken";
 
+const nonSecurePaths = ["/", "/register", "/login"];
+
+//     if (nonSecurePaths.includes(req.path)) return next();
+
 const createJWT = (payload) => {
     let key = process.env.JWT_SECRET;
     let token = null;
@@ -25,7 +29,9 @@ const verifyToken = (token) => {
     return decoded;
 };
 
+// check người dùng đã đăng nhập hay chưa
 const checkUserJwt = (req, res, next) => {
+    if (nonSecurePaths.includes(req.path)) return next();
     // lấy tát cả cookies người dùng gửi lên
     let cookies = req.cookies;
 
@@ -52,7 +58,9 @@ const checkUserJwt = (req, res, next) => {
     }
 };
 
+// check nguoi dùng có quyền truy cập url này không
 const checkUserPermission = (req, res, next) => {
+    if (nonSecurePaths.includes(req.path)) return next();
     // middleware thứ 2 sẽ nhận tất cả req mà middleware 1 gửi đi trong cùng 1 url
     if (req.user) {
         let email = req.user.email;
