@@ -44,8 +44,8 @@ const handleRegister = async (req, res) => {
 const handleLogin = async (req, res) => {
     try {
         let data = await loginRegisterService.handleUserLogin(req.body);
-        if (data && data.EC === 0) {
-            // mỗi khi đăng nhập thành công sẽ tự động tạo cookie có key là jwt với hạn 1 tiếng
+        if (data && data.EC === 0 && data.DT.access_token) {
+            // mỗi khi đăng nhập thành công sẽ tự động tạo cookie có key là jwt với tuổi thọ của cookies 1 tiếng
             res.cookie("jwt", data.DT.access_token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,

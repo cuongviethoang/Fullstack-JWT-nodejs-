@@ -9,7 +9,9 @@ const createJWT = (payload) => {
     let key = process.env.JWT_SECRET;
     let token = null;
     try {
-        token = jwt.sign(payload, key);
+        token = jwt.sign(payload, key, {
+            expiresIn: process.env.JWT_EXPIRES_IN,
+        });
     } catch (e) {
         console.log(e);
     }
@@ -41,6 +43,7 @@ const checkUserJwt = (req, res, next) => {
         if (decoded) {
             // đính kèm user vào req rồi gửi tới server(đính kèm dữ liệu tùy ý )
             req.user = decoded;
+            req.token = token;
             next();
         } else {
             return res.status(401).json({
@@ -60,7 +63,8 @@ const checkUserJwt = (req, res, next) => {
 
 // check nguoi dùng có quyền truy cập url này không
 const checkUserPermission = (req, res, next) => {
-    if (nonSecurePaths.includes(req.path)) return next();
+    if (nonSecurePaths.includes(req.path) || req.path === "/account")
+        return next();
     // middleware thứ 2 sẽ nhận tất cả req mà middleware 1 gửi đi trong cùng 1 url
     if (req.user) {
         let email = req.user.email;

@@ -95,9 +95,26 @@ const deleteFunc = async (req, res) => {
     }
 };
 
+// hàm này được tạo ra để kiểm tra mỗi khi refresh lại client , client sẽ gửi 1 api / account về server
+// server sẽ lấy token và thông tin người dùng trong req gửi đến
+// với mục đích check thông tin người dùng sau mỗi lần refresh
+const getUserAccount = async (req, res) => {
+    return res.status(200).json({
+        EC: 0,
+        EM: "ok",
+        DT: {
+            access_token: req.token,
+            groupWithRole: req.user.groupWithRole,
+            email: req.user.email,
+            username: req.user.username,
+        },
+    });
+};
+
 module.exports = {
     readFunc,
     createFunc,
     updateFunc,
     deleteFunc,
+    getUserAccount,
 };
