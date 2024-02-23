@@ -31,15 +31,28 @@ const verifyToken = (token) => {
     return decoded;
 };
 
-// check người dùng đã đăng nhập hay chưa
+// check người dùng đã đăng nhập hay chưa bang token trong header
+const extractToken = (req) => {
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.split(" ")[0] === "Bearer"
+    ) {
+        return req.headers.authorization.split(" ")[1];
+    }
+    return null;
+};
+
+// check người dùng đã đăng nhập hay chưa bang cookies
 const checkUserJwt = (req, res, next) => {
     if (nonSecurePaths.includes(req.path)) return next();
     // lấy tát cả cookies người dùng gửi lên
     let cookies = req.cookies;
+    let tokenFromHeader = extractToken(req);
 
-    if (cookies && cookies.jwt) {
-        let token = cookies.jwt;
+    if ((cookies && cookies.jwt) || tokenFromHeader) {
+        let token = cookies && cookies.jwt ? cookies.jwt : tokenFromHeader;
         let decoded = verifyToken(token);
+
         if (decoded) {
             // đính kèm user vào req rồi gửi tới server(đính kèm dữ liệu tùy ý )
             req.user = decoded;

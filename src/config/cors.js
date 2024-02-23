@@ -7,9 +7,12 @@ const configCors = (app) => {
         res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
         res.setHeader(
             "Access-Control-Allow-Headers",
-            "X-Requested-With, Content-Type"
+            "X-Requested-With, Content-Type, Authorization"
         );
         res.setHeader("Access-Control-Allow-Credentials", true);
+        if (req.method === "OPTIONS") {
+            return res.sendStatus(200);
+        }
         next();
     });
 };
