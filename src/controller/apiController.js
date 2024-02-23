@@ -66,8 +66,28 @@ const handleLogin = async (req, res) => {
     }
 };
 
+const handleLogout = (req, res) => {
+    try {
+        //xoa cookies khi dang xuat vi thuoc tinh httpOnly chi cho xoa duoi backend khong cho xoa tren frontend
+        res.clearCookie("jwt");
+        return res.status(200).json({
+            EM: "clear cookies done", //error message
+            EC: 0, // error code
+            DT: "Logout success", // data
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            EM: "error logout from server", //error message
+            EC: "-1", // error code
+            DT: "", // data
+        });
+    }
+};
+
 module.exports = {
     testApi,
     handleRegister,
     handleLogin,
+    handleLogout,
 };

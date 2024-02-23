@@ -148,6 +148,11 @@ const updateUser = async (data) => {
         }
     } catch (e) {
         console.log(e);
+        return {
+            EM: "update error update user in services",
+            EC: 1,
+            DT: "group",
+        };
     }
 };
 

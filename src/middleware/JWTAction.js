@@ -1,7 +1,7 @@
 require("dotenv").config();
 import jwt from "jsonwebtoken";
 
-const nonSecurePaths = ["/", "/register", "/login"];
+const nonSecurePaths = ["/", "/register", "/login", "/logout"];
 
 //     if (nonSecurePaths.includes(req.path)) return next();
 
@@ -43,7 +43,7 @@ const extractToken = (req) => {
     return null;
 };
 
-// check người dùng đã đăng nhập hay chưa bang cookies
+// check người dùng đã đăng nhập hay chưa bang cookies hoac authorize bearer
 const checkUserJwt = (req, res, next) => {
     if (nonSecurePaths.includes(req.path)) return next();
     // lấy tát cả cookies người dùng gửi lên
