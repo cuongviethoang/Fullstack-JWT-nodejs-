@@ -35,7 +35,8 @@ const verifyToken = (token) => {
 const extractToken = (req) => {
     if (
         req.headers.authorization &&
-        req.headers.authorization.split(" ")[0] === "Bearer"
+        req.headers.authorization.split(" ")[0] === "Bearer" &&
+        req.headers.authorization.split(" ")[1] !== "null"
     ) {
         return req.headers.authorization.split(" ")[1];
     }
@@ -48,8 +49,7 @@ const checkUserJwt = (req, res, next) => {
     // lấy tát cả cookies người dùng gửi lên
     let cookies = req.cookies;
     let tokenFromHeader = extractToken(req);
-
-    if ((cookies && cookies.jwt) || tokenFromHeader) {
+    if (cookies.jwt || tokenFromHeader) {
         let token = cookies && cookies.jwt ? cookies.jwt : tokenFromHeader;
         let decoded = verifyToken(token);
 
