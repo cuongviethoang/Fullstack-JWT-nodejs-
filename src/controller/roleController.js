@@ -2,11 +2,9 @@ import roleApiService from "../service/roleApiService";
 import userApiService from "../service/userApiService";
 const readFunc = async (req, res) => {
     try {
-        // khi lấy dữ liệu từ req.query ra thì kết quả đang ở dạng string cần convert sang number
-        let data = await groupApiService.createNewRoles(req.body);
-
-        // console.log(">>> check data: ", data);
-
+        let data = await roleApiService.getAllRoles({
+            raw: true,
+        });
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
@@ -62,8 +60,8 @@ const updateFunc = async (req, res) => {
 
 const deleteFunc = async (req, res) => {
     try {
-        // console.log(">> check req: ", req.body);
-        let data = await userApiService.deleteUser(req.body.id);
+        console.log(">> check delete role: ", req.body);
+        let data = await roleApiService.deleteRole(req.body.id);
         return res.status(200).json({
             EM: data.EM,
             EC: data.EC,
