@@ -91,7 +91,12 @@ const checkUserPermission = (req, res, next) => {
                 EM: "you don't have permission to access thí resource",
             });
         }
-        let canAccess = roles.some((item) => item.url === currentUrl);
+        //phải dùng currentUrl.includes(item.url) vì nếu currentUrl là: /role/group/4 và item.url ;à /role/group
+        // thì nó vẫn sẽ hợp lệ, nếu không có đoạn kiểm tra này thì middleware tự custom sẽ coi như 1 url khác và
+        // người dùng sẽ được coi như không đủ thẩm quyền để sử dụng url này
+        let canAccess = roles.some(
+            (item) => item.url === currentUrl || currentUrl.includes(item.url)
+        );
 
         if (canAccess === true) {
             next();

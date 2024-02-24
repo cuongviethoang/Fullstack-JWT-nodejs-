@@ -87,8 +87,45 @@ const deleteRole = async (id) => {
     }
 };
 
+const getRolesByGroup = async (groupId) => {
+    try {
+        if (!groupId) {
+            return {
+                EM: "There is no groupId to perform roles",
+                EC: 1,
+                DT: [],
+            };
+        }
+
+        let roles = await db.Group.findOne({
+            where: {
+                id: groupId,
+            },
+            include: {
+                model: db.Role,
+                attributes: ["id", "url", "description"],
+                through: { attributes: [] },
+            },
+            attributes: ["id", "name", "description"],
+        });
+        return {
+            EM: "get roles by group success",
+            EC: 0,
+            DT: roles,
+        };
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "something wrong with get roles by group service",
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
 module.exports = {
     createNewRoles,
     getAllRoles,
     deleteRole,
+    getRolesByGroup,
 };
