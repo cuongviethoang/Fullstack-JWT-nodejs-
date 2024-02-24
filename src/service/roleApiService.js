@@ -116,7 +116,33 @@ const getRolesByGroup = async (groupId) => {
     } catch (e) {
         console.log(e);
         return {
-            EM: "something wrong with get roles by group service",
+            EM: "something wrong with get roles by group in service",
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
+const assignRolesToGroup = async (data) => {
+    try {
+        // xóa tất cả group-role có groupId được chỉ định
+        await db.Group_Role.destroy({
+            where: {
+                groupId: +data.groupId,
+            },
+        });
+
+        // tạo nhiều group-role cùng 1 lúc
+        await db.Group_Role.bulkCreate(data.groupRoles);
+        return {
+            EM: "Assign roles to group is succeed",
+            EC: 0,
+            DT: [],
+        };
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "something wrong with assign roles to group in service",
             EC: 1,
             DT: [],
         };
@@ -128,4 +154,5 @@ module.exports = {
     getAllRoles,
     deleteRole,
     getRolesByGroup,
+    assignRolesToGroup,
 };
