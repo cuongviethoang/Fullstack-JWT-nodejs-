@@ -55,6 +55,82 @@ const getAllRoles = async () => {
     }
 };
 
+const getRoleWithPagination = async (page, limit) => {
+    try {
+        let offset = (page - 1) * limit;
+        const { count, rows } = await db.Role.findAndCountAll({
+            offset,
+            limit,
+            attributes: ["id", "url", "description"],
+            order: [["id", "DESC"]],
+        });
+        let totalPages = Math.ceil(count / limit);
+
+        let data = {
+            totalRows: count,
+            totalPages: totalPages,
+            roles: rows,
+        };
+        return {
+            EM: "get data success with page and limit",
+            EC: 0,
+            DT: data,
+        };
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "something wrong get roles with pagination with service",
+            EC: 1,
+            DT: data,
+        };
+    }
+};
+
+const updateRole = async (data) => {
+    try {
+        if (data.id) {
+            console.log(">> check data update role in service: ", data);
+            let role = await db.Role.findOne({
+                where: {
+                    id: +data.id,
+                },
+            });
+
+            if (role) {
+                await role.update({
+                    url: data.url,
+                    description: data.description,
+                });
+
+                return {
+                    EM: "update role success",
+                    EC: 0,
+                    DT: "",
+                };
+            } else {
+                return {
+                    EM: "Role not found when update service",
+                    EC: 1,
+                    DT: "",
+                };
+            }
+        } else {
+            return {
+                EM: "Don't have role id",
+                EC: 1,
+                DT: "",
+            };
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            EM: "something wrong with update role service",
+            EC: 1,
+            DT: [],
+        };
+    }
+};
+
 const deleteRole = async (id) => {
     try {
         let data = await db.Role.findOne({
@@ -152,7 +228,9 @@ const assignRolesToGroup = async (data) => {
 module.exports = {
     createNewRoles,
     getAllRoles,
+    getRoleWithPagination,
     deleteRole,
     getRolesByGroup,
     assignRolesToGroup,
+    updateRole,
 };

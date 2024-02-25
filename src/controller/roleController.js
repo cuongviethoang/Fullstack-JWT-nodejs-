@@ -1,15 +1,32 @@
 import roleApiService from "../service/roleApiService";
-import userApiService from "../service/userApiService";
 const readFunc = async (req, res) => {
     try {
-        let data = await roleApiService.getAllRoles({
-            raw: true,
-        });
-        return res.status(200).json({
-            EM: data.EM,
-            EC: data.EC,
-            DT: data.DT, // data
-        });
+        if (req.query.page && req.query.limit) {
+            let page = req.query.page;
+            let limit = req.query.limit;
+
+            // khi lấy dữ liệu từ req.query ra thì kết quả đang ở dạng string cần convert sang number
+            let data = await roleApiService.getRoleWithPagination(
+                +page,
+                +limit
+            );
+
+            // console.log(">>> check data: ", data);
+
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT, // data
+            });
+        } else {
+            let data = await roleApiService.getAllRoles();
+
+            return res.status(200).json({
+                EM: data.EM,
+                EC: data.EC,
+                DT: data.DT, // data
+            });
+        }
     } catch (e) {
         console.log(e);
         return res.status(500).json({
@@ -22,6 +39,7 @@ const readFunc = async (req, res) => {
 
 const createFunc = async (req, res) => {
     try {
+        console.log(">> check data create role in controller: ", req.body);
         let data = await roleApiService.createNewRoles(req.body);
 
         return res.status(200).json({
@@ -41,7 +59,7 @@ const createFunc = async (req, res) => {
 
 const updateFunc = async (req, res) => {
     try {
-        let data = await userApiService.updateUser(req.body);
+        let data = await roleApiService.updateRole(req.body.data);
 
         return res.status(200).json({
             EM: data.EM,
@@ -60,7 +78,7 @@ const updateFunc = async (req, res) => {
 
 const deleteFunc = async (req, res) => {
     try {
-        console.log(">> check delete role: ", req.body);
+        console.log(">> check data delete role in controller: ", req.body);
         let data = await roleApiService.deleteRole(req.body.id);
         return res.status(200).json({
             EM: data.EM,

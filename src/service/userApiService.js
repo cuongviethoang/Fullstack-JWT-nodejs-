@@ -113,6 +113,7 @@ const createNewUser = async (data) => {
 
 const updateUser = async (data) => {
     try {
+        console.log(">> check data update user: ", data);
         if (!data.groupId) {
             return {
                 EM: "update error because not have groupId",
